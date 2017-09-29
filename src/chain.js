@@ -1,4 +1,5 @@
 const {GenesisBlock} = require('./block');
+const {last} = require('lodash')
 
 module.exports.Chain = class {
 
@@ -6,7 +7,13 @@ module.exports.Chain = class {
         this.blockchain = [GenesisBlock()];
     }
 
-    chain() {
+    add(newBlock) {
+        this.blockchain.push(newBlock)
+    }
+
+    latestBlock () {return last(this.blockchain)};
+
+    chain () {
         return this.blockchain
     }
 };
