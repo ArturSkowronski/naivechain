@@ -1,11 +1,20 @@
 const {GenesisBlock, isValidNewBlock} = require('./block');
-const {last} = require('lodash')
+const {last, head} = require('lodash');
 
 module.exports.Chain = class {
-
-    constructor() {
-        this.blockchain = [GenesisBlock()];
+    constructor(originalChain) {
+        if(originalChain){
+            this.blockchain = cloneDeep(originalChain)
+        } else {
+            this.blockchain = [GenesisBlock()];
+        }
     }
+
+    chain() {
+        return this.blockchain
+    }
+
+    latestBlock () {return last(this.blockchain)};
 
     add(newBlock) {
         if (isValidNewBlock(newBlock, this.latestBlock())) {
@@ -13,9 +22,16 @@ module.exports.Chain = class {
         }
     }
 
-    latestBlock () {return last(this.blockchain)};
+    size(){
+        return this.blockchain.length;
+    }
 
-    chain () {
-        return this.blockchain
+    get(i) {
+        return this.blockchain[i];
+
+    }
+
+    genesisBlock(){
+        return head(this.blockchain)
     }
 };

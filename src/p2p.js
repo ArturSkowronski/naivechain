@@ -4,7 +4,8 @@ const p2p_port = process.env.P2P_PORT || 6001;
 const initialPeers = process.env.PEERS ? process.env.PEERS.split(',') : [];
 
 module.exports.P2PServer = class {
-    constructor() {
+    constructor(messageHandlers) {
+        this.messageHandlers = messageHandlers;
         this.sockets = [];
         this.connectToPeers(initialPeers);
         const server = new WebSocket.Server({port: p2p_port});
@@ -29,9 +30,20 @@ module.exports.P2PServer = class {
 
     initConnection(ws) {
         this.sockets.push(ws);
+        this.initMessageHandler(ws);
         this.initErrorHandler(ws);
+        this.write(ws, this.messageHandlers.queryChainLengthMsg());
     };
 
+    initMessageHandler(ws) {
+        ws.on('message', (data) => {
+                const listeners = this.messageHandlers.listenersData(ws);
+                const message = JSON.parse(data);
+                console.log(`Received message ${JSON.stringify(message)}`);
+                listeners[message.type](message);
+            }
+        );
+    }
 
     initErrorHandler(ws) {
         const closeConnection = (ws) => {
