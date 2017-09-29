@@ -11,6 +11,25 @@ class Block {
     }
 }
 
+module.exports.isValidNewBlock = (newBlock, previousBlock) => {
+    if (previousBlock.index + 1 !== newBlock.index) {
+        console.log('invalid index');
+        return false;
+    }
+
+    if (previousBlock.hash !== newBlock.previousHash) {
+        console.log('invalid previoushash');
+        return false;
+    }
+
+    if (calculateHashForBlock(newBlock) !== newBlock.hash) {
+        console.log(`invalid hash:  ${calculateHashForBlock(newBlock)} ${newBlock.hash}`);
+        return false;
+    }
+
+    return true;
+};
+
 module.exports.NextBlock = (previousBlock, blockData) => {
     const nextIndex = previousBlock.index + 1;
     const nextTimestamp = new Date().getTime() / 1000;
@@ -25,3 +44,8 @@ module.exports.GenesisBlock = () => {
 const calculateHash = (index, previousHash, timestamp, data) => {
     return CryptoJS.SHA256(index + previousHash + timestamp + data).toString();
 };
+
+const calculateHashForBlock = (block) => {
+    return calculateHash(block.index, block.previousHash, block.timestamp, block.data);
+};
+

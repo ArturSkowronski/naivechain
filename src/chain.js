@@ -1,4 +1,4 @@
-const {GenesisBlock} = require('./block');
+const {GenesisBlock, isValidNewBlock} = require('./block');
 const {last} = require('lodash')
 
 module.exports.Chain = class {
@@ -8,7 +8,9 @@ module.exports.Chain = class {
     }
 
     add(newBlock) {
-        this.blockchain.push(newBlock)
+        if (isValidNewBlock(newBlock, this.latestBlock())) {
+            this.blockchain.push(newBlock)
+        }
     }
 
     latestBlock () {return last(this.blockchain)};
