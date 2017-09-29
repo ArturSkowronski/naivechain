@@ -1,5 +1,7 @@
 'use strict';
+
 const CryptoJS = require("crypto-js");
+const {startsWith} = require('lodash');
 
 class Block {
     constructor(index, previousHash, timestamp, data, hash) {
@@ -42,10 +44,18 @@ module.exports.GenesisBlock = () => {
 };
 
 const calculateHash = (index, previousHash, timestamp, data) => {
-    return CryptoJS.SHA256(index + previousHash + timestamp + data).toString();
+    let nounce = 0;
+
+    while(true){
+        nounce++;
+        const value = CryptoJS.SHA256(index + previousHash + timestamp + data + nounce).toString();
+        if (startsWith(value, "000000")) {
+            console.log(`Found Nounce: ${nounce} for hash ${value}`);
+            return value;
+        }
+    }
 };
 
 const calculateHashForBlock = (block) => {
     return calculateHash(block.index, block.previousHash, block.timestamp, block.data);
 };
-
