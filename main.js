@@ -44,6 +44,17 @@ const mineBlock = (data) => {
     return newBlock;
 };
 
+
+const replaceChain = (newBlockchain) => {
+    if (newBlockchain.isValidChain() && newBlockchain.size() > chain.size()) {
+        console.log('Received blockchain is valid. Replacing current blockchain with received blockchain');
+        chain = newBlockchain;
+        return handlers.responseLatestMsg();
+    } else {
+        console.log('Received blockchain invalid');
+    }
+};
+
 const handleBlockchainResponse = (message) => {
     const receivedBlocks = JSON.parse(message.data).sort((b1, b2) => (b1.index - b2.index));
     const latestBlockReceived = last(receivedBlocks);
@@ -65,7 +76,7 @@ const handleBlockchainResponse = (message) => {
 
         console.log("Received blockchain is longer than current blockchain");
 
-        chain = newBlockchain;
+        replaceChain(newBlockchain);
 
         return handlers.responseLatestMsg();
     } else {

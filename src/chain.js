@@ -1,5 +1,5 @@
 const {GenesisBlock, isValidNewBlock} = require('./block');
-const {last, head} = require('lodash');
+const {last, head, isEqual} = require('lodash');
 
 module.exports.Chain = class {
     constructor(originalChain) {
@@ -34,4 +34,18 @@ module.exports.Chain = class {
     genesisBlock(){
         return head(this.blockchain)
     }
+
+
+    isValidChain () {
+        if (!isEqual(this.genesisBlock(), GenesisBlock())) {
+            return false;
+        }
+
+        for (let i = 1; i < this.size(); i++) {
+            if (!isValidNewBlock(this.get(i), this.get[i - 1])) {
+                return false;
+            }
+        }
+        return true;
+    };
 };
